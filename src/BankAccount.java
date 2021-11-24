@@ -29,9 +29,23 @@ public class BankAccount {
     public String getOwnerUsername(){
         return this.owner.getUserName();
     }
+    public ArrayList<String> getHistory(){return this.history;}
     // setters
-    private String setAccountID(String un, int n){
+    private String setAccountID(String un, int n) {
         return un + "-account-" + n;
     }
     // methods
+    public void deposit(double val){
+        this.balance += val;
+        this.history.add("£" + val + " deposited on " + LocalDate.now());
+    }
+    public boolean withdraw(double val){
+        if(this.balance < val){
+            return false;
+        } else {
+            this.balance -= val;
+            this.history.add("£" + val + " withdrawn on " + LocalDate.now());
+            return true;
+        }
+    }
 }

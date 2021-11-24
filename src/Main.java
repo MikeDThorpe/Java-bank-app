@@ -90,7 +90,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         // list bank accounts linked with the customerProfile
         System.out.println("Showing accounts for: " + customerProfile.getUserName());
-        System.out.println("");
+        System.out.println();
         for(BankAccount account : customerProfile.getAccounts()){
             System.out.println("*************************");
             System.out.println();
@@ -112,13 +112,13 @@ public class Main {
             String id = scanner.nextLine();
 
             // create array of possible values to check against
-            ArrayList<String> vals = new ArrayList<String>();
+            ArrayList<String> vals = new ArrayList<>();
             for(BankAccount account : customerProfile.getAccounts()){
                 String s = String.valueOf(account.getAccountID().charAt(account.getAccountID().length() -1));
                 vals.add(s);
             }
             while(!vals.contains(id)){
-                System.out.println("No match found. Please enter another id or press 'n' to return to menu");
+                System.out.println("No match found. Please enter another ID or press 'n' to return to menu.");
                 id = scanner.nextLine();
                 if(id.equals("n")){
                     showAccountMenu(customerProfile);
@@ -135,7 +135,64 @@ public class Main {
         }
     }
     private static void manageAccount(CustomerProfile customerProfile, BankAccount account) {
-        System.out.println(account.getAccountID());
+        Scanner scanner = new Scanner(System.in);
+        String userInput;
+
+        // print bank account menu
+        System.out.println("A: Deposit");
+        System.out.println("B: Withdraw");
+        System.out.println("C: Check account history");
+        System.out.println("D: Delete account");
+        System.out.println("e: Main menu");
+
+        do {
+            System.out.println("What would you like to do?");
+            userInput = scanner.nextLine();
+        } while(!userInput.equals("a") && !userInput.equals("b") && !userInput.equals("c") && !userInput.equals("d") && !userInput.equals("e"));
+
+        switch (userInput){
+            case "a":
+                changeBalance("deposit", account, customerProfile);
+            case "b":
+                changeBalance("withdraw", account, customerProfile);
+            case "c":
+                showAccountHistory(account, customerProfile);
+            case "d":
+            case "e":
+                showAccountMenu(customerProfile);
+                break;
+        }
+    }
+    private static void changeBalance(String action, BankAccount account, CustomerProfile customerProfile){
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("How much would you like to " + action + "?");
+        String amount = scanner.nextLine();
+        while(Double.parseDouble(amount) <= 0){
+            System.out.println("Please enter a valid" + action + "value.");
+            amount = scanner.nextLine();
+        }
+        if(action.equals("deposit")){
+            account.deposit(Double.parseDouble(amount));
+            System.out.println("£" + amount + " deposited. Your current balance is £" + account.getBalance());
+
+        } else if (action.equals("withdraw")){
+            while(!account.withdraw(Double.parseDouble(amount))){
+                System.out.println("You don't have enough funds in your account to withdraw £" + amount);
+                System.out.print("How much would you like to withdraw? ");
+                amount = scanner.nextLine();
+            }
+            System.out.println("£" + amount + " withdrawn. Your current balance is £" + account.getBalance());
+        }
+        manageAccount(customerProfile, account);
+    }
+    private static void showAccountHistory(BankAccount account, CustomerProfile customerProfile) {
+        System.out.println("*************************");
+        for(String entry : account.getHistory()){
+            System.out.println(entry);
+        }
+        System.out.println("*************************");
+        manageAccount(customerProfile, account);
     }
     private static void quitApp(){
         System.out.println("Goodbye, your account will be deleted.");
